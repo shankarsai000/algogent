@@ -3,10 +3,13 @@ import {
   shouldChargeOnResult,
   type PaymentIntent,
   type PaymentReceipt,
+  type SettlementRail,
   type SkillResult,
 } from "@algogent/shared";
 import { loadPaymentConfig } from "./config";
 import { saveReceipt } from "./receipt-store";
+import { getSettlementProvider, resolveRail } from "./registry";
+import { receiptFromPlan } from "./types";
 
 export type SettleInput = {
   result: SkillResult;
@@ -15,11 +18,11 @@ export type SettleInput = {
   asset: "ALGO" | "USDC";
   developerPayTo: string;
   platformFeeBps: number;
+  preferredRail?: SettlementRail;
 };
 
 /**
- * Gate + settle payment after a skill run.
- * Failed/cancelled runs never charge.
+ * success → PaymentPlan → SettlementProvider → Receipt
  */
 export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt> {
   const { result } = input;
@@ -30,6 +33,7 @@ export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt
       skillId: input.skillId,
       network: "testnet",
       mode: "simulate",
+      rail: "simulate",
       txIds: [],
       totalMicro: 0,
       developerMicro: 0,
@@ -49,7 +53,8 @@ export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt
       runId: result.runId,
       skillId: input.skillId,
       network: config.network,
-      mode: config.simulate ? "simulate" : "onchain",
+      mode: "simulate",
+      rail: "simulate",
       txIds: [],
       totalMicro: 0,
       developerMicro: 0,
@@ -71,44 +76,19 @@ export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt
     platformPayTo: config.platformPayTo,
     platformFeeBps: input.platformFeeBps,
     network: config.network,
+    preferredRail: input.preferredRail,
   };
 
   const plan = buildPaymentPlan(intent);
+  const rail = resolveRail(plan.preferredRail, config.defaultRail);
+  const provider = getSettlementProvider(rail);
 
-  // Phase 3.0: simulate atomic group settlement.
-  // Phase 3.1+: encode real Payment txns with algosdk + wallet.signTxns + algod send.
-  const txIds = config.simulate
-    ? [
-        `sim-dev-${result.runId.slice(0, 8)}`,
-        `sim-plat-${result.runId.slice(0, 8)}`,
-      ]
-    : await submitAtomicGroupPlaceholder(plan);
+  const settleResult = await provider.settle(plan, {
+    allowSimulateFallback: config.allowSimulateFallback,
+  });
 
-  const receipt: PaymentReceipt = {
-    runId: plan.runId,
-    skillId: plan.skillId,
-    network: plan.network,
-    mode: config.simulate ? "simulate" : "onchain",
-    txIds,
-    totalMicro: plan.totalMicro,
-    developerMicro: plan.developerMicro,
-    platformMicro: plan.platformMicro,
-    paidAt: new Date().toISOString(),
-    status: "settled",
-  };
+  const status = settleResult.ok ? "settled" : "failed";
+  const receipt = receiptFromPlan(plan, settleResult, status);
   await saveReceipt(receipt);
   return receipt;
-}
-
-/**
- * Placeholder for real algosdk atomic group submit.
- * Throws until on-chain path is fully wired with a live wallet.
- */
-async function submitAtomicGroupPlaceholder(_plan: {
-  developerMicro: number;
-  platformMicro: number;
-}): Promise<string[]> {
-  throw new Error(
-    "onchain_not_configured: enable simulate mode or wire algosdk + wallet signTxns",
-  );
 }

@@ -2,12 +2,11 @@ import { z } from "zod";
 import { AiProviderSchema } from "./providers.js";
 
 export const SkillPricingSchema = z.object({
-  /** Amount in micro-units of the asset (e.g. microAlgos) for precision. */
+  /** Micro-units: USDC uses 6 decimals ($1 = 1_000_000). */
   amountMicro: z.number().int().nonnegative(),
-  asset: z.enum(["ALGO", "USDC"]).default("ALGO"),
-  /** Algorand address that receives the developer share. */
-  developerPayTo: z.string().min(58).max(58).optional(),
-  /** Platform fee in basis points (100 = 1%). */
+  asset: z.enum(["ALGO", "USDC"]).default("USDC"),
+  /** Pay-to address (EVM 0x…, Solana base58, or Algorand). */
+  developerPayTo: z.string().min(1).max(128).optional(),
   platformFeeBps: z.number().int().min(0).max(10_000).default(1000),
 });
 
@@ -23,7 +22,6 @@ export const SkillManifestSchema = z.object({
   author: z.string().min(1),
   providers: z.array(AiProviderSchema).min(1),
   pricing: SkillPricingSchema,
-  /** Relative path or inline body reference for SKILL.md content. */
   bodyPath: z.string().default("SKILL.md"),
   tags: z.array(z.string()).default([]),
   inputs: z
@@ -45,10 +43,6 @@ export function parseSkillManifest(data: unknown): SkillManifest {
   return SkillManifestSchema.parse(data);
 }
 
-/**
- * Replace `{{inputKey}}` placeholders in skill body with user-provided values.
- * Unknown placeholders are left intact so the model can still see them.
- */
 export function renderSkillBody(
   template: string,
   inputs: Record<string, string>,

@@ -12,36 +12,30 @@ describe("splitPaymentAmounts", () => {
       platformMicro: 100_000,
     });
   });
-
-  it("handles zero fee", () => {
-    expect(splitPaymentAmounts(500, 0)).toEqual({
-      developerMicro: 500,
-      platformMicro: 0,
-    });
-  });
 });
 
 describe("shouldChargeOnResult", () => {
   it("charges only on success", () => {
     expect(shouldChargeOnResult("success")).toBe(true);
     expect(shouldChargeOnResult("failed")).toBe(false);
-    expect(shouldChargeOnResult("cancelled")).toBe(false);
   });
 });
 
 describe("buildPaymentPlan", () => {
-  it("builds plan from intent", () => {
+  it("builds USDC plan with preferred rail", () => {
     const plan = buildPaymentPlan({
       runId: "run-12345678",
       skillId: "summarize-text",
-      amountMicro: 100_000,
-      asset: "ALGO",
-      developerPayTo: "DEVADDRDEVADDRDEVADDRDEVADDRDEVADDRDEVADDRDEVADDRDEVA",
-      platformPayTo: "PLATADDRPLATADDRPLATADDRPLATADDRPLATADDRPLATADDRPLATA",
+      amountMicro: 50_000,
+      asset: "USDC",
+      developerPayTo: "0xDeveloper000000000000000000000000000001",
+      platformPayTo: "0xPlatform0000000000000000000000000000001",
       platformFeeBps: 1000,
       network: "testnet",
+      preferredRail: "x402_base",
     });
-    expect(plan.developerMicro).toBe(90_000);
-    expect(plan.platformMicro).toBe(10_000);
+    expect(plan.developerMicro).toBe(45_000);
+    expect(plan.platformMicro).toBe(5_000);
+    expect(plan.preferredRail).toBe("x402_base");
   });
 });

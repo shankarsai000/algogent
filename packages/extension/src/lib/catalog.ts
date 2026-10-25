@@ -1,8 +1,8 @@
 import type { SkillManifest } from "@algogent/shared";
 import { parseSkillManifest } from "@algogent/shared";
 
-const DEMO_DEV =
-  "ALGOSKILLDEVPLACEHOLDERREPLACEWITHREAL58CHARADDR000";
+/** Demo EVM pay-to — replace with real Base USDC recipient. */
+const DEMO_DEV = "0xAlgogentSkillDevPlaceholder000000000001";
 
 const RAW_SKILLS = [
   {
@@ -13,8 +13,8 @@ const RAW_SKILLS = [
     author: "algogent",
     providers: ["chatgpt", "claude", "gemini", "meta_ai"],
     pricing: {
-      amountMicro: 100_000,
-      asset: "ALGO",
+      amountMicro: 50_000,
+      asset: "USDC",
       platformFeeBps: 1000,
       developerPayTo: DEMO_DEV,
     },
@@ -37,8 +37,8 @@ const RAW_SKILLS = [
     author: "algogent",
     providers: ["chatgpt", "claude", "gemini", "meta_ai"],
     pricing: {
-      amountMicro: 100_000,
-      asset: "ALGO",
+      amountMicro: 50_000,
+      asset: "USDC",
       platformFeeBps: 1000,
       developerPayTo: DEMO_DEV,
     },

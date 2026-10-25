@@ -7,15 +7,15 @@ vi.mock("./receipt-store", () => ({
 vi.mock("./config", () => ({
   loadPaymentConfig: vi.fn(async () => ({
     network: "testnet",
-    simulate: true,
-    platformPayTo: "PLATFORMADDR",
-    algodUrl: "https://testnet-api.algonode.cloud",
+    defaultRail: "x402_base",
+    allowSimulateFallback: true,
+    platformPayTo: "0xPlatform",
   })),
 }));
 
 import { settleAfterRun } from "./settle";
 
-describe("settleAfterRun", () => {
+describe("settleAfterRun pipeline", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -29,16 +29,16 @@ describe("settleAfterRun", () => {
         errorCode: "x",
       },
       skillId: "summarize-text",
-      amountMicro: 100_000,
-      asset: "ALGO",
-      developerPayTo: "DEV",
+      amountMicro: 50_000,
+      asset: "USDC",
+      developerPayTo: "0xDev",
       platformFeeBps: 1000,
     });
     expect(receipt.status).toBe("skipped");
     expect(receipt.totalMicro).toBe(0);
   });
 
-  it("settles on success in simulate mode", async () => {
+  it("settles success via x402_base with simulate fallback", async () => {
     const receipt = await settleAfterRun({
       result: {
         type: "SKILL_RESULT",
@@ -47,14 +47,32 @@ describe("settleAfterRun", () => {
       },
       skillId: "summarize-text",
       amountMicro: 100_000,
-      asset: "ALGO",
-      developerPayTo: "DEVADDR",
+      asset: "USDC",
+      developerPayTo: "0xDev",
       platformFeeBps: 1000,
+      preferredRail: "x402_base",
+    });
+    expect(receipt.status).toBe("settled");
+    expect(receipt.developerMicro).toBe(90_000);
+    expect(receipt.platformMicro).toBe(10_000);
+    expect(receipt.txIds.length).toBeGreaterThan(0);
+  });
+
+  it("can force pure simulate rail", async () => {
+    const receipt = await settleAfterRun({
+      result: {
+        type: "SKILL_RESULT",
+        runId: "run-success-02",
+        status: "success",
+      },
+      skillId: "summarize-text",
+      amountMicro: 100_000,
+      asset: "USDC",
+      developerPayTo: "0xDev",
+      platformFeeBps: 1000,
+      preferredRail: "simulate",
     });
     expect(receipt.status).toBe("settled");
     expect(receipt.mode).toBe("simulate");
-    expect(receipt.developerMicro).toBe(90_000);
-    expect(receipt.platformMicro).toBe(10_000);
-    expect(receipt.txIds.length).toBe(2);
   });
 });

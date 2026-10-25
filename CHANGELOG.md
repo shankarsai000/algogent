@@ -1,21 +1,17 @@
 # Changelog
 
-## [phase-4] — 2026-10-25 (on main)
+## [0.5.0-settlement] — 2026-10-25
 
 ### Added
-- Gemini + Meta AI content adapters and tests
-- Provider filters for all four LLM UIs
-- Threat model, privacy policy draft, store listing draft
-- Extension page CSP in manifest
+- Pluggable `SettlementProvider` registry
+- Rails: `x402_base` (primary), `x402_solana`, `simulate`, `stripe_balance`
+- Local USDC prepaid balance store for fiat top-up path
+- ADR 0004 + PAYMENTS.md
+- Default skill pricing in USDC
 
-## [phase-3] — 2026-10-25
+### Changed
+- Settlement no longer Algorand-only; plan is rail-agnostic
 
-Frozen on **`phase-3`**. Pay-per-completed-run gate, simulate settlement, receipts.
+## Prior phases
 
-## [phase-2] — 2026-10-25
-
-Frozen on **`phase-2`**. Claude adapter, search/filter.
-
-## [phase-1] — 2026-10-25
-
-Frozen on **`phase-1`**. WXT + ChatGPT adapter.
+See git branches `phase-1` … `phase-3` and earlier changelog entries on main.
