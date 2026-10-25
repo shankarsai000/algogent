@@ -1,0 +1,44 @@
+:root {
+  color-scheme: light dark;
+  --bg: #0f1419;
+  --card: #1a2332;
+  --text: #e7ecf3;
+  --muted: #9aa8bc;
+  --accent: #3d8bfd;
+  --border: #2a3548;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); min-width: 320px; }
+.header { padding: 1rem 1.25rem 0.5rem; }
+.header h1 { margin: 0.35rem 0 0; font-size: 1.2rem; }
+.tagline { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.85rem; }
+.skills { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem 1.25rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1rem; }
+.card h2 { margin: 0 0 0.35rem; font-size: 1rem; }
+.card p { margin: 0.25rem 0; font-size: 0.875rem; color: var(--muted); }
+.meta { font-size: 0.75rem !important; }
+button.run, button.back {
+  margin-top: 0.6rem; background: var(--accent); color: #fff; border: none;
+  border-radius: 8px; padding: 0.45rem 0.85rem; cursor: pointer; font-weight: 600;
+}
+button.back { background: transparent; color: var(--accent); padding: 0; margin: 0; }
+.form { padding: 0.5rem 1.25rem 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.field { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; }
+.field textarea {
+  width: 100%; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); padding: 0.5rem 0.65rem; resize: vertical; font: inherit;
+}
+button.primary { width: 100%; margin-top: 0.25rem; }
+.status { padding: 0 1.25rem 1.25rem; font-size: 0.8rem; color: var(--accent); min-height: 1.2rem; }
+.search { padding: 0 1.25rem; }
+.search input {
+  width: 100%; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); padding: 0.5rem 0.65rem; font: inherit;
+}
+.filters { display: flex; gap: 0.5rem; flex-wrap: wrap; padding: 0.5rem 1.25rem 0; }
+.filters button {
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  border-radius: 999px; padding: 0.25rem 0.65rem; cursor: pointer; font-size: 0.75rem;
+}
+.filters button.active { border-color: var(--accent); color: var(--text); }

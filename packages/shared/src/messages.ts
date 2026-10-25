@@ -6,20 +6,25 @@ export const SkillRunRequestSchema = z.object({
   skillId: z.string(),
   provider: AiProviderSchema,
   renderedBody: z.string().min(1),
-  runId: z.string().uuid(),
+  runId: z.string().min(8),
 });
 
 export const SkillResultSchema = z.object({
   type: z.literal("SKILL_RESULT"),
-  runId: z.string().uuid(),
+  runId: z.string().min(8),
   status: z.enum(["success", "failed", "cancelled"]),
   summary: z.string().optional(),
   errorCode: z.string().optional(),
 });
 
+export const GetActiveProviderSchema = z.object({
+  type: z.literal("GET_ACTIVE_PROVIDER"),
+});
+
 export const ExtensionMessageSchema = z.discriminatedUnion("type", [
   SkillRunRequestSchema,
   SkillResultSchema,
+  GetActiveProviderSchema,
 ]);
 
 export type SkillRunRequest = z.infer<typeof SkillRunRequestSchema>;
