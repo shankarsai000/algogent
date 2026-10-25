@@ -1,0 +1,17 @@
+{
+  "name": "algogent",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Browser extension marketplace for AI agent skills with Algorand pay-per-run",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "dev": "pnpm --filter @algogent/extension dev",
+    "test": "pnpm -r run test",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

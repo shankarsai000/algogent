@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Algogent",
+  "version": "0.1.0",
+  "description": "Marketplace for AI agent skills across ChatGPT, Claude, Gemini, and Meta AI. Pay per completed run on Algorand.",
+  "action": {
+    "default_title": "Algogent"
+  },
+  "side_panel": {
+    "default_path": "sidepanel/index.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["sidePanel", "storage", "activeTab", "scripting"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://www.meta.ai/*",
+    "https://meta.ai/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": ["content/chatgpt.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

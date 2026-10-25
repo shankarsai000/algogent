@@ -1,0 +1,22 @@
+{
+  "id": "rewrite-clear",
+  "name": "Rewrite for clarity",
+  "version": "0.1.0",
+  "description": "Rewrite the input in clearer, simpler language.",
+  "author": "algogent",
+  "providers": ["chatgpt"],
+  "pricing": {
+    "amountMicro": 100000,
+    "asset": "ALGO",
+    "platformFeeBps": 1000
+  },
+  "bodyPath": "SKILL.md",
+  "tags": ["writing"],
+  "inputs": [
+    {
+      "key": "text",
+      "label": "Text",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "summarize-text",
+  "name": "Summarize text",
+  "version": "0.1.0",
+  "description": "Produce a concise summary of the provided text.",
+  "author": "algogent",
+  "providers": ["chatgpt", "claude"],
+  "pricing": {
+    "amountMicro": 100000,
+    "asset": "ALGO",
+    "platformFeeBps": 1000
+  },
+  "bodyPath": "SKILL.md",
+  "tags": ["writing"],
+  "inputs": [
+    {
+      "key": "text",
+      "label": "Text to summarize",
+      "required": true,
+      "placeholder": "Paste text…"
+    }
+  ]
+}
