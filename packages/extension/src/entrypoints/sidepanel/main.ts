@@ -13,9 +13,12 @@ import { listReceipts } from "../../lib/payments/receipt-store";
 const root = document.getElementById("root");
 if (!root) throw new Error("missing #root");
 
-let statusText = "Connect wallet (or use simulate) · open ChatGPT/Claude · run a skill.";
+const PROVIDER_FILTERS = ["all", "chatgpt", "claude", "gemini", "meta_ai"] as const;
+
+let statusText =
+  "Connect wallet (or simulate) · open a provider tab · run a skill.";
 let query = "";
-let providerFilter: string | "all" = "all";
+let providerFilter: string = "all";
 let walletLabel = "Wallet: not connected";
 
 function setStatus(text: string): void {
@@ -49,7 +52,7 @@ function renderList(): void {
     root!.innerHTML = `
     <header class="header">
       <h1>Algogent</h1>
-      <p class="tagline">Pay per completed run · Algorand Testnet</p>
+      <p class="tagline">Skills · ChatGPT · Claude · Gemini · Meta AI</p>
       <p class="meta">${escapeHtml(walletLabel)}</p>
       <button type="button" class="run" id="connect">Connect wallet</button>
     </header>
@@ -57,12 +60,10 @@ function renderList(): void {
       <input id="q" type="search" placeholder="Search skills…" value="${escapeHtml(query)}" />
     </div>
     <div class="filters">
-      ${["all", "chatgpt", "claude"]
-        .map(
-          (p) =>
-            `<button type="button" data-provider="${p}" class="${providerFilter === p ? "active" : ""}">${p}</button>`,
-        )
-        .join("")}
+      ${PROVIDER_FILTERS.map(
+        (p) =>
+          `<button type="button" data-provider="${p}" class="${providerFilter === p ? "active" : ""}">${p}</button>`,
+      ).join("")}
     </div>
     <section class="skills" id="skills"></section>
     <p id="status" class="status" role="status">${escapeHtml(statusText)}</p>
@@ -105,7 +106,7 @@ function renderList(): void {
       card.innerHTML = `
       <h2>${escapeHtml(skill.name)}</h2>
       <p>${escapeHtml(skill.description)}</p>
-      <p class="meta">${(skill.pricing.amountMicro / 1_000_000).toFixed(3)} ${skill.pricing.asset} · fee ${skill.pricing.platformFeeBps / 100}% · ${skill.providers.join(", ")}</p>
+      <p class="meta">${(skill.pricing.amountMicro / 1_000_000).toFixed(3)} ${skill.pricing.asset} · ${skill.providers.join(", ")}</p>
       <button type="button" class="run">Configure &amp; run</button>
     `;
       card.querySelector("button")?.addEventListener("click", () =>
@@ -173,7 +174,7 @@ async function handleRun(skill: SkillManifest): Promise<void> {
   setStatus("Checking active tab…");
   const active = await chrome.runtime.sendMessage({ type: "GET_ACTIVE_PROVIDER" });
   if (!active?.ok) {
-    setStatus(`Open ChatGPT or Claude first (${active?.error ?? "no_active_tab"}).`);
+    setStatus(`Open a supported provider tab (${active?.error ?? "no_active_tab"}).`);
     return;
   }
   if (!skill.providers.includes(active.provider)) {
@@ -195,7 +196,7 @@ async function handleRun(skill: SkillManifest): Promise<void> {
     return;
   }
 
-  setStatus("Settling payment (simulate/Testnet)…");
+  setStatus("Settling payment…");
   const receipt = await settleAfterRun({
     result,
     skillId: skill.id,
@@ -207,7 +208,7 @@ async function handleRun(skill: SkillManifest): Promise<void> {
 
   if (receipt.status === "settled") {
     setStatus(
-      `Paid ${receipt.totalMicro / 1_000_000} ALGO · dev ${receipt.developerMicro} / platform ${receipt.platformMicro} · ${receipt.mode} · ${receipt.txIds[0] ?? ""}`,
+      `Paid ${receipt.totalMicro / 1_000_000} ALGO · ${receipt.mode} · ${receipt.txIds[0] ?? ""}`,
     );
   } else {
     setStatus(`Payment ${receipt.status}: ${receipt.errorCode ?? ""}`);

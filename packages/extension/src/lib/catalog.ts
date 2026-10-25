@@ -1,7 +1,6 @@
 import type { SkillManifest } from "@algogent/shared";
 import { parseSkillManifest } from "@algogent/shared";
 
-/** Demo developer address for Testnet plans — replace per skill in production. */
 const DEMO_DEV =
   "ALGOSKILLDEVPLACEHOLDERREPLACEWITHREAL58CHARADDR000";
 
@@ -12,7 +11,7 @@ const RAW_SKILLS = [
     version: "0.1.0",
     description: "Produce a concise summary of the provided text.",
     author: "algogent",
-    providers: ["chatgpt", "claude"],
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
     pricing: {
       amountMicro: 100_000,
       asset: "ALGO",
@@ -36,7 +35,7 @@ const RAW_SKILLS = [
     version: "0.1.0",
     description: "Rewrite the input in clearer, simpler language.",
     author: "algogent",
-    providers: ["chatgpt", "claude"],
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
     pricing: {
       amountMicro: 100_000,
       asset: "ALGO",

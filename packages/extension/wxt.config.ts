@@ -7,7 +7,7 @@ export default defineConfig({
     name: "Algogent",
     description:
       "Marketplace for AI agent skills across ChatGPT, Claude, Gemini, and Meta AI. Pay per completed run on Algorand.",
-    version: "0.1.0",
+    version: "0.4.0",
     permissions: ["sidePanel", "storage", "activeTab", "scripting", "tabs"],
     host_permissions: [
       "https://chatgpt.com/*",
@@ -19,6 +19,10 @@ export default defineConfig({
     ],
     action: {
       default_title: "Algogent",
+    },
+    content_security_policy: {
+      extension_pages:
+        "script-src 'self'; object-src 'self'; base-uri 'self';",
     },
   },
 });

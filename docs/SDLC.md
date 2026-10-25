@@ -3,24 +3,23 @@
 ## Policy
 
 - Develop on **`main`** only.
-- Freeze phases as branches: `phase-1`, `phase-2`, `phase-3`, …
+- Freeze phases as branches: `phase-1` … `phase-4`.
 
-## Phases
+## Status
 
 | Phase | Status | Ref |
 |-------|--------|-----|
-| 0 Foundation | ✅ | early main |
-| 1 Extension + ChatGPT | ✅ | `phase-1` |
+| 0 Foundation | ✅ | — |
+| 1 ChatGPT shell | ✅ | `phase-1` |
 | 2 Claude + catalog UX | ✅ | `phase-2` |
-| 3 Algorand pay-per-run | 🚧 on `main` | — |
-| 4 Hardening / store | Pending | — |
+| 3 Pay-per-run (simulate) | ✅ | `phase-3` |
+| 4 Hardening + Gemini/Meta | 🚧 on `main` | — |
 | 5 Production ops | Pending | — |
 
-### Phase 3 exit criteria
+### Phase 4 exit criteria
 
-- [x] Charge only on successful runs
-- [x] Atomic split plan (developer / platform)
-- [x] Simulate settlement + local receipts
-- [x] Wallet connect surface (ARC-0027 / simulate)
-- [ ] Live Testnet broadcast with real addresses + algosdk sign/send
-- [ ] Manual funded-wallet smoke test
+- [x] Gemini + Meta AI adapters + unit tests
+- [x] Threat model + privacy policy draft + store listing draft
+- [x] CSP on extension pages
+- [ ] Manual smoke on all four providers
+- [ ] Chrome Web Store submission package (`wxt zip`)
