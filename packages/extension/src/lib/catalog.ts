@@ -1,6 +1,10 @@
 import type { SkillManifest } from "@algogent/shared";
 import { parseSkillManifest } from "@algogent/shared";
 
+/** Demo developer address for Testnet plans — replace per skill in production. */
+const DEMO_DEV =
+  "ALGOSKILLDEVPLACEHOLDERREPLACEWITHREAL58CHARADDR000";
+
 const RAW_SKILLS = [
   {
     id: "summarize-text",
@@ -9,7 +13,12 @@ const RAW_SKILLS = [
     description: "Produce a concise summary of the provided text.",
     author: "algogent",
     providers: ["chatgpt", "claude"],
-    pricing: { amountMicro: 100_000, asset: "ALGO", platformFeeBps: 1000 },
+    pricing: {
+      amountMicro: 100_000,
+      asset: "ALGO",
+      platformFeeBps: 1000,
+      developerPayTo: DEMO_DEV,
+    },
     bodyPath: "SKILL.md",
     tags: ["writing"],
     inputs: [
@@ -28,7 +37,12 @@ const RAW_SKILLS = [
     description: "Rewrite the input in clearer, simpler language.",
     author: "algogent",
     providers: ["chatgpt", "claude"],
-    pricing: { amountMicro: 100_000, asset: "ALGO", platformFeeBps: 1000 },
+    pricing: {
+      amountMicro: 100_000,
+      asset: "ALGO",
+      platformFeeBps: 1000,
+      developerPayTo: DEMO_DEV,
+    },
     bodyPath: "SKILL.md",
     tags: ["writing"],
     inputs: [{ key: "text", label: "Text", required: true }],
@@ -62,3 +76,7 @@ Keep the original meaning. Use short sentences where possible.
 {{text}}
 `,
 };
+
+export function getSkillById(id: string): SkillManifest | undefined {
+  return SEED_SKILLS.find((s) => s.id === id);
+}

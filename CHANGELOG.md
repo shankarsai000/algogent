@@ -1,22 +1,31 @@
 # Changelog
 
-## [phase-2] — 2026-10-25 (on main)
+## [phase-3] — 2026-10-25 (on main)
 
 ### Added
-- Claude.ai content adapter (inject + completion heuristics)
-- Marketplace search + provider filter chips in side panel
-- `filterSkills` pure helper with unit tests
-- Skills marked for both ChatGPT and Claude where applicable
+- Pay-per-completed-run gate (`shouldChargeOnResult`)
+- `buildPaymentPlan` atomic split (developer / platform bps)
+- Settlement pipeline with **simulate** mode (default) and on-chain placeholder
+- Wallet connect (ARC-0027 or simulate identity)
+- Local payment receipt store
+- Side panel: connect wallet + settle after successful run
+- ADR 0003
+
+## [phase-2] — 2026-10-25
+
+Frozen on branch **`phase-2`**.
+
+### Added
+- Claude adapter, search/filter marketplace UI
 
 ## [phase-1] — 2026-10-25
 
-Frozen on branch/ref **`phase-1`** (also `VERSION` was `0.1.0-phase-1`).
+Frozen on branch **`phase-1`**.
 
 ### Added
-- WXT MV3 extension, side panel runner, ChatGPT adapter
-- Background provider routing, permissions docs, tests
+- WXT MV3, ChatGPT adapter, side panel runner
 
 ## [phase-0] — 2026-10-25
 
 ### Added
-- Monorepo foundation, SDLC, architecture
+- Monorepo foundation

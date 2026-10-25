@@ -3,13 +3,20 @@ import { renderSkillBody, type SkillManifest } from "@algogent/shared";
 import { SEED_SKILLS, SKILL_BODIES } from "../../lib/catalog";
 import { filterSkills } from "../../lib/filter-skills";
 import { createRunId } from "../../lib/ids";
+import {
+  connectWallet,
+  getStoredWalletAddress,
+} from "../../lib/payments/wallet";
+import { settleAfterRun } from "../../lib/payments/settle";
+import { listReceipts } from "../../lib/payments/receipt-store";
 
 const root = document.getElementById("root");
 if (!root) throw new Error("missing #root");
 
-let statusText = "Open ChatGPT or Claude, then run a skill.";
+let statusText = "Connect wallet (or use simulate) · open ChatGPT/Claude · run a skill.";
 let query = "";
 let providerFilter: string | "all" = "all";
+let walletLabel = "Wallet: not connected";
 
 function setStatus(text: string): void {
   statusText = text;
@@ -25,16 +32,26 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
-function renderList(): void {
-  const skills = filterSkills(SEED_SKILLS, {
-    query,
-    provider: providerFilter === "all" ? undefined : providerFilter,
-  });
+async function refreshWalletLabel(): Promise<void> {
+  const addr = await getStoredWalletAddress();
+  walletLabel = addr
+    ? `Wallet: ${addr.slice(0, 6)}…${addr.slice(-4)}`
+    : "Wallet: not connected (simulate OK)";
+}
 
-  root!.innerHTML = `
+function renderList(): void {
+  void refreshWalletLabel().then(() => {
+    const skills = filterSkills(SEED_SKILLS, {
+      query,
+      provider: providerFilter === "all" ? undefined : providerFilter,
+    });
+
+    root!.innerHTML = `
     <header class="header">
       <h1>Algogent</h1>
-      <p class="tagline">Skills marketplace · pay per run (Phase 3)</p>
+      <p class="tagline">Pay per completed run · Algorand Testnet</p>
+      <p class="meta">${escapeHtml(walletLabel)}</p>
+      <button type="button" class="run" id="connect">Connect wallet</button>
     </header>
     <div class="search">
       <input id="q" type="search" placeholder="Search skills…" value="${escapeHtml(query)}" />
@@ -51,38 +68,52 @@ function renderList(): void {
     <p id="status" class="status" role="status">${escapeHtml(statusText)}</p>
   `;
 
-  document.getElementById("q")?.addEventListener("input", (e) => {
-    query = (e.target as HTMLInputElement).value;
-    renderList();
-  });
+    document.getElementById("connect")?.addEventListener("click", () => {
+      void connectWallet()
+        .then((w) => {
+          setStatus(`Connected ${w.address.slice(0, 8)}…`);
+          renderList();
+        })
+        .catch((e: unknown) =>
+          setStatus(e instanceof Error ? e.message : "wallet_failed"),
+        );
+    });
 
-  root!.querySelectorAll("[data-provider]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      providerFilter = (btn as HTMLElement).dataset.provider ?? "all";
+    document.getElementById("q")?.addEventListener("input", (e) => {
+      query = (e.target as HTMLInputElement).value;
       renderList();
     });
-  });
 
-  const list = document.getElementById("skills");
-  if (!list) return;
+    root!.querySelectorAll("[data-provider]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        providerFilter = (btn as HTMLElement).dataset.provider ?? "all";
+        renderList();
+      });
+    });
 
-  if (skills.length === 0) {
-    list.innerHTML = `<p class="tagline">No skills match.</p>`;
-    return;
-  }
+    const list = document.getElementById("skills");
+    if (!list) return;
 
-  for (const skill of skills) {
-    const card = document.createElement("article");
-    card.className = "card";
-    card.innerHTML = `
+    if (skills.length === 0) {
+      list.innerHTML = `<p class="tagline">No skills match.</p>`;
+      return;
+    }
+
+    for (const skill of skills) {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
       <h2>${escapeHtml(skill.name)}</h2>
       <p>${escapeHtml(skill.description)}</p>
-      <p class="meta">${(skill.pricing.amountMicro / 1_000_000).toFixed(3)} ${skill.pricing.asset} · ${skill.providers.join(", ")} · ${skill.tags.join(", ")}</p>
+      <p class="meta">${(skill.pricing.amountMicro / 1_000_000).toFixed(3)} ${skill.pricing.asset} · fee ${skill.pricing.platformFeeBps / 100}% · ${skill.providers.join(", ")}</p>
       <button type="button" class="run">Configure &amp; run</button>
     `;
-    card.querySelector("button")?.addEventListener("click", () => renderDetail(skill));
-    list.appendChild(card);
-  }
+      card.querySelector("button")?.addEventListener("click", () =>
+        renderDetail(skill),
+      );
+      list.appendChild(card);
+    }
+  });
 }
 
 function renderDetail(skill: SkillManifest): void {
@@ -104,7 +135,7 @@ function renderDetail(skill: SkillManifest): void {
     </header>
     <form id="run-form" class="form">
       ${fields || "<p class=\"tagline\">No inputs required.</p>"}
-      <button type="submit" class="run primary">Run on active provider tab</button>
+      <button type="submit" class="run primary">Run &amp; settle on success</button>
     </form>
     <p id="status" class="status" role="status">${escapeHtml(statusText)}</p>
   `;
@@ -159,11 +190,30 @@ async function handleRun(skill: SkillManifest): Promise<void> {
     runId,
   });
 
-  if (result?.status === "success") {
-    setStatus(`Success · run ${runId.slice(0, 8)}…`);
-  } else {
-    setStatus(`Failed: ${result?.errorCode ?? result?.status ?? "unknown"}`);
+  if (result?.status !== "success") {
+    setStatus(`Failed: ${result?.errorCode ?? result?.status ?? "unknown"} · no charge`);
+    return;
   }
+
+  setStatus("Settling payment (simulate/Testnet)…");
+  const receipt = await settleAfterRun({
+    result,
+    skillId: skill.id,
+    amountMicro: skill.pricing.amountMicro,
+    asset: skill.pricing.asset,
+    developerPayTo: skill.pricing.developerPayTo ?? "",
+    platformFeeBps: skill.pricing.platformFeeBps,
+  });
+
+  if (receipt.status === "settled") {
+    setStatus(
+      `Paid ${receipt.totalMicro / 1_000_000} ALGO · dev ${receipt.developerMicro} / platform ${receipt.platformMicro} · ${receipt.mode} · ${receipt.txIds[0] ?? ""}`,
+    );
+  } else {
+    setStatus(`Payment ${receipt.status}: ${receipt.errorCode ?? ""}`);
+  }
+
+  void listReceipts();
 }
 
-renderList();
+void renderList();
