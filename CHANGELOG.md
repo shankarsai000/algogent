@@ -1,16 +1,22 @@
 # Changelog
 
-## [phase-1] — 2026-10-25
+## [phase-2] — 2026-10-25 (on main)
 
 ### Added
-- WXT-based Chrome MV3 extension scaffold
-- Side panel skill list, inputs, and run flow
-- Background `GET_ACTIVE_PROVIDER` / `RUN_SKILL` routing
-- ChatGPT content adapter (inject, send, completion wait)
-- Shared skill/payment/provider schemas and unit tests
-- `docs/PERMISSIONS.md`, ADR 0002 (WXT)
+- Claude.ai content adapter (inject + completion heuristics)
+- Marketplace search + provider filter chips in side panel
+- `filterSkills` pure helper with unit tests
+- Skills marked for both ChatGPT and Claude where applicable
+
+## [phase-1] — 2026-10-25
+
+Frozen on branch/ref **`phase-1`** (also `VERSION` was `0.1.0-phase-1`).
+
+### Added
+- WXT MV3 extension, side panel runner, ChatGPT adapter
+- Background provider routing, permissions docs, tests
 
 ## [phase-0] — 2026-10-25
 
 ### Added
-- Monorepo foundation, SDLC, architecture docs
+- Monorepo foundation, SDLC, architecture
