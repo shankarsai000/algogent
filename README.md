@@ -4,7 +4,7 @@
 
 Run tasks across ChatGPT, Claude, Gemini, and Meta AI from one side panel using your existing logged-in sessions. Pay only for completed agent runs via small Algorand micropayments — no monthly subscription.
 
-> Status: **Phase 0 → Phase 1** (foundation complete, core extension in progress)
+> Status: **Phase 1** — side panel + ChatGPT adapter on branch `feat/phase-1-extension-shell`
 
 ## Vision
 
@@ -14,64 +14,42 @@ Run tasks across ChatGPT, Claude, Gemini, and Meta AI from one side panel using 
 | Subscription pricing for sporadic agent work | Pay-per-successful-run on Algorand |
 | Hard-to-monetize reusable skills | Marketplace with atomic on-chain developer / platform split |
 
-## Architecture (high level)
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  Browser (MV3 Extension)                                 │
-│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐ │
-│  │ Side Panel  │  │ Skill Runner │  │ Provider Adapters│ │
-│  │ (UI + shop) │──│ (orchestrate)│──│ ChatGPT/Claude/  │ │
-│  └─────────────┘  └──────┬───────┘  │ Gemini/Meta AI   │ │
-│                          │          └─────────────────┘ │
-│  ┌───────────────────────▼────────────────────────────┐ │
-│  │ Payment Client (Algorand / x402-style micropay)    │ │
-│  └────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
-```
-
 ## Repository layout
 
 ```
 algogent/
-├── docs/                 # Architecture, SDLC, ADRs
+├── docs/                 # Architecture, SDLC, ADRs, permissions
 ├── packages/
 │   ├── shared/           # Types, skill schema, pure utilities
-│   └── extension/        # Chrome MV3 extension (side panel + adapters)
-├── skills/               # Example / seed skills (SKILL.md + manifest)
-└── .github/workflows/    # CI
+│   └── extension/        # Chrome MV3 extension (WXT)
+└── skills/               # Canonical skill sources (mirrored in extension catalog)
 ```
 
-## Quick start (local)
+## Quick start
 
 ```bash
+git clone https://github.com/shankarsai000/algogent.git
+cd algogent
 pnpm install
 pnpm --filter @algogent/shared build
+pnpm --filter @algogent/shared test
+pnpm --filter @algogent/extension test
 pnpm --filter @algogent/extension dev
 ```
 
-Load the unpacked extension from `packages/extension/.output/chrome-mv3` (after first build) in `chrome://extensions`.
+Then Chrome → `chrome://extensions` → Developer mode → **Load unpacked** → select `packages/extension/.output/chrome-mv3` (path may vary slightly by WXT version).
 
-## SDLC roadmap
+1. Open https://chatgpt.com and sign in.
+2. Open the Algogent side panel.
+3. Pick a skill, enter inputs, run.
 
-See [docs/SDLC.md](docs/SDLC.md) for phases, exit criteria, and quality gates.
+## Permissions
 
-| Phase | Focus |
-|-------|--------|
-| 0 | Repo, standards, schemas |
-| 1 | Side panel + provider adapters (read/write session) |
-| 2 | Skill runtime + marketplace catalog |
-| 3 | Algorand pay-per-run + atomic split |
-| 4 | Hardening, security review, store submission |
-| 5 | Production ops (metrics, support, iteration) |
+See [docs/PERMISSIONS.md](docs/PERMISSIONS.md).
 
-## Quality bar
+## SDLC
 
-- TypeScript strict mode
-- Unit tests for shared domain logic
-- Lint + typecheck required in CI
-- No secrets in repo; env via `.env.example` only
-- Conventional commits preferred
+See [docs/SDLC.md](docs/SDLC.md).
 
 ## License
 

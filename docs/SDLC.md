@@ -12,13 +12,7 @@ Structured path from zero to production-grade product.
 
 ## Phases
 
-### Phase 0 — Foundation (current)
-
-**Goals**
-
-- Monorepo, tooling, CI
-- Skill + payment domain types
-- Architecture and coding standards
+### Phase 0 — Foundation
 
 **Exit criteria**
 
@@ -28,78 +22,56 @@ Structured path from zero to production-grade product.
 - [x] CI typecheck / lint / test pipeline
 - [x] SDLC + architecture docs
 
-### Phase 1 — Extension shell & provider adapters
+### Phase 1 — Extension shell & provider adapters (in progress on `feat/phase-1-extension-shell`)
 
 **Goals**
 
-- MV3 side panel UI
-- Content-script adapters that can inject a prompt and observe a response on at least one provider (ChatGPT first)
+- MV3 side panel UI (WXT)
+- Content-script adapter: inject prompt + observe completion on ChatGPT
 - Provider detection from active tab URL
 
 **Exit criteria**
 
-- [ ] Side panel opens and lists mock skills
-- [ ] "Run skill" injects prompt into ChatGPT web UI and captures completion signal
-- [ ] Unit tests for adapter pure helpers
-- [ ] Permissions documented and minimal
+- [x] Side panel lists seed skills and collects inputs
+- [x] "Run skill" routes through background → ChatGPT content script
+- [x] Completion detection helpers + unit tests
+- [x] Permissions documented (`docs/PERMISSIONS.md`)
+- [ ] Manual smoke test on real ChatGPT tab (local `pnpm dev`)
 
 ### Phase 2 — Skill runtime & catalog
 
 **Goals**
 
-- Load skills from local catalog / packaged `skills/`
-- Skill runner: expand template → execute on selected provider → report status
-- Basic marketplace UI (search, category, price display)
-
-**Exit criteria**
-
-- [ ] At least 3 seed skills runnable end-to-end on ChatGPT
-- [ ] Skill validation against Zod schema
-- [ ] Claude adapter (second provider)
+- Load skills from packaged `skills/` + validation
+- Claude adapter
+- Marketplace search/filter UX
 
 ### Phase 3 — Payments (Algorand)
 
 **Goals**
 
-- Wallet connect (Pera / Lute / wallet standard)
-- Charge only on verified completion
-- Atomic split: developer + platform in one group transaction (Testnet first)
-
-**Exit criteria**
-
-- [ ] Testnet payment succeeds after mocked completion
-- [ ] Failed runs do not charge
-- [ ] Receipt stored locally with tx id
-- [ ] ADR for x402 vs direct payment flow
+- Wallet connect; charge only on verified completion
+- Atomic developer + platform split (Testnet first)
 
 ### Phase 4 — Hardening & distribution
 
 **Goals**
 
-- Threat model, CSP, permission audit
-- E2E smoke tests
-- Chrome Web Store package + privacy policy
+- Threat model, CSP, store submission
 - Gemini + Meta AI adapters as capacity allows
-
-**Exit criteria**
-
-- [ ] Security checklist signed off
-- [ ] CI green on main
-- [ ] Store listing assets ready
 
 ### Phase 5 — Production operations
 
 **Goals**
 
-- Error reporting (opt-in), versioned skill registry API if needed
-- Support channel, changelog, semantic versioning releases
+- Opt-in error reporting, versioned releases, support channel
 
 ## Quality gates (every PR)
 
 | Gate | Tooling |
 |------|---------|
 | Types | `tsc --noEmit` |
-| Lint | ESLint |
+| Lint | package lint scripts |
 | Unit tests | Vitest |
 | Secrets | No hardcoded keys |
 

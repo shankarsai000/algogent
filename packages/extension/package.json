@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json --noEmit && node ./scripts/copy-static.mjs",
-    "dev": "echo \"Open packages/extension in Chrome as unpacked after build; WXT wiring is Phase 1\"",
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "lint": "tsc -p tsconfig.json --noEmit"
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0.287",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "wxt": "^0.19.22"
   }
 }
