@@ -1,17 +1,16 @@
 # Changelog
 
-## [0.5.0-settlement] — 2026-10-25
+## [0.6.0-oss-launch] — 2026-10-26
 
 ### Added
-- Pluggable `SettlementProvider` registry
-- Rails: `x402_base` (primary), `x402_solana`, `simulate`, `stripe_balance`
-- Local USDC prepaid balance store for fiat top-up path
-- ADR 0004 + PAYMENTS.md
-- Default skill pricing in USDC
+- **Open Skill Format** under `spec/` (README + SCHEMA)
+- Skill `_template` for contributors
+- Launch-oriented README (problem, install, compare)
 
-### Changed
-- Settlement no longer Algorand-only; plan is rail-agnostic
+## [0.5.0-settlement] — 2026-10-25
 
-## Prior phases
+Pluggable settlement: x402 Base/Solana, simulate, stripe_balance.
 
-See git branches `phase-1` … `phase-3` and earlier changelog entries on main.
+## Earlier
+
+Phases 1–4: extension, multi-provider adapters, pay-per-success gate.

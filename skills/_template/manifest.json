@@ -1,0 +1,24 @@
+{
+  "id": "my-skill",
+  "name": "My skill",
+  "version": "0.1.0",
+  "description": "One-line description of what this skill does.",
+  "author": "your-github-handle",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": {
+    "amountMicro": 0,
+    "asset": "USDC",
+    "platformFeeBps": 1000
+  },
+  "tags": ["example"],
+  "inputs": [
+    {
+      "key": "text",
+      "label": "Input",
+      "required": true,
+      "placeholder": "Paste your input…"
+    }
+  ],
+  "bodyPath": "SKILL.md"
+}
