@@ -1,0 +1,13 @@
+{
+  "id": "job-bullets",
+  "name": "Resume bullets",
+  "version": "0.1.0",
+  "description": "Turn rough work notes into strong resume bullets.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["career", "writing"],
+  "inputs": [{ "key": "notes", "label": "What you did", "required": true }],
+  "bodyPath": "SKILL.md"
+}

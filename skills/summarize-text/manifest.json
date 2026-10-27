@@ -2,22 +2,12 @@
   "id": "summarize-text",
   "name": "Summarize text",
   "version": "0.1.0",
-  "description": "Produce a concise summary of the provided text.",
+  "description": "Concise bullet summary. Preserves facts; no invention.",
   "author": "algogent",
-  "providers": ["chatgpt", "claude"],
-  "pricing": {
-    "amountMicro": 100000,
-    "asset": "ALGO",
-    "platformFeeBps": 1000
-  },
-  "bodyPath": "SKILL.md",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
   "tags": ["writing"],
-  "inputs": [
-    {
-      "key": "text",
-      "label": "Text to summarize",
-      "required": true,
-      "placeholder": "Paste text…"
-    }
-  ]
+  "inputs": [{ "key": "text", "label": "Text", "required": true, "placeholder": "Paste text…" }],
+  "bodyPath": "SKILL.md"
 }

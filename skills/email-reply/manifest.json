@@ -1,0 +1,17 @@
+{
+  "id": "email-reply",
+  "name": "Email reply draft",
+  "version": "0.1.0",
+  "description": "Polite, concise reply draft in a chosen tone.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["writing", "work"],
+  "inputs": [
+    { "key": "email", "label": "Original email", "required": true },
+    { "key": "goal", "label": "What you want to say", "required": true },
+    { "key": "tone", "label": "Tone", "required": false, "placeholder": "professional / friendly / firm" }
+  ],
+  "bodyPath": "SKILL.md"
+}

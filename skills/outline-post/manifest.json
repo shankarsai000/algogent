@@ -1,0 +1,13 @@
+{
+  "id": "outline-post",
+  "name": "Blog / thread outline",
+  "version": "0.1.0",
+  "description": "Structured outline for a post or X thread from a topic.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["writing"],
+  "inputs": [{ "key": "topic", "label": "Topic", "required": true }],
+  "bodyPath": "SKILL.md"
+}

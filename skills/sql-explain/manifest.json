@@ -1,0 +1,13 @@
+{
+  "id": "sql-explain",
+  "name": "Explain SQL",
+  "version": "0.1.0",
+  "description": "Explain a SQL query and flag performance pitfalls.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["code", "data"],
+  "inputs": [{ "key": "sql", "label": "SQL", "required": true }],
+  "bodyPath": "SKILL.md"
+}

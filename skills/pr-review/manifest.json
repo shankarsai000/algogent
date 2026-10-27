@@ -1,0 +1,13 @@
+{
+  "id": "pr-review",
+  "name": "PR review",
+  "version": "0.1.0",
+  "description": "Structured code review: risks, tests, style, suggested fixes.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["code"],
+  "inputs": [{ "key": "diff", "label": "Diff or code", "required": true, "placeholder": "Paste diff or file…" }],
+  "bodyPath": "SKILL.md"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "meeting-notes",
+  "name": "Meeting notes → actions",
+  "version": "0.1.0",
+  "description": "Extract decisions, action items, and open questions from raw notes.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["work", "productivity"],
+  "inputs": [{ "key": "notes", "label": "Raw notes", "required": true, "placeholder": "Paste meeting notes…" }],
+  "bodyPath": "SKILL.md"
+}

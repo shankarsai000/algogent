@@ -1,0 +1,13 @@
+{
+  "id": "explain-code",
+  "name": "Explain code",
+  "version": "0.1.0",
+  "description": "Plain-language explanation of what code does and why.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["code", "learning"],
+  "inputs": [{ "key": "code", "label": "Code", "required": true }],
+  "bodyPath": "SKILL.md"
+}

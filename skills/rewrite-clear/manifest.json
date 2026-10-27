@@ -2,21 +2,12 @@
   "id": "rewrite-clear",
   "name": "Rewrite for clarity",
   "version": "0.1.0",
-  "description": "Rewrite the input in clearer, simpler language.",
+  "description": "Rewrite in clearer, simpler language without changing meaning.",
   "author": "algogent",
-  "providers": ["chatgpt"],
-  "pricing": {
-    "amountMicro": 100000,
-    "asset": "ALGO",
-    "platformFeeBps": 1000
-  },
-  "bodyPath": "SKILL.md",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
   "tags": ["writing"],
-  "inputs": [
-    {
-      "key": "text",
-      "label": "Text",
-      "required": true
-    }
-  ]
+  "inputs": [{ "key": "text", "label": "Text", "required": true }],
+  "bodyPath": "SKILL.md"
 }

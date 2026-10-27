@@ -1,0 +1,13 @@
+{
+  "id": "bug-bisect",
+  "name": "Bug bisect plan",
+  "version": "0.1.0",
+  "description": "Turn a bug report into a ordered debugging checklist.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["code"],
+  "inputs": [{ "key": "bug", "label": "Bug report", "required": true }],
+  "bodyPath": "SKILL.md"
+}

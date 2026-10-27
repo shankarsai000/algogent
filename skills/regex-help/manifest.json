@@ -1,0 +1,13 @@
+{
+  "id": "regex-help",
+  "name": "Regex helper",
+  "version": "0.1.0",
+  "description": "Write or explain a regex with test examples.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["code"],
+  "inputs": [{ "key": "task", "label": "What you need", "required": true }],
+  "bodyPath": "SKILL.md"
+}

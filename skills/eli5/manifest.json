@@ -1,0 +1,13 @@
+{
+  "id": "eli5",
+  "name": "Explain like I'm 5",
+  "version": "0.1.0",
+  "description": "Simple explanation with a short analogy; then a one-line accurate version.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["learning"],
+  "inputs": [{ "key": "topic", "label": "Topic or passage", "required": true }],
+  "bodyPath": "SKILL.md"
+}

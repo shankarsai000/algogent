@@ -1,0 +1,13 @@
+{
+  "id": "threat-prompt",
+  "name": "Threat model sketch",
+  "version": "0.1.0",
+  "description": "Lightweight STRIDE-style threats for a system description.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["security"],
+  "inputs": [{ "key": "system", "label": "System description", "required": true }],
+  "bodyPath": "SKILL.md"
+}

@@ -1,79 +1,218 @@
 import type { SkillManifest } from "@algogent/shared";
 import { parseSkillManifest } from "@algogent/shared";
 
-/** Demo EVM pay-to — replace with real Base USDC recipient. */
-const DEMO_DEV = "0xAlgogentSkillDevPlaceholder000000000001";
-
-const RAW_SKILLS = [
+/**
+ * Seed catalog mirrored from skills/*/manifest.json + SKILL.md.
+ * All launch skills are free (amountMicro: 0) for zero-friction onboarding.
+ */
+const RAW = [
   {
     id: "summarize-text",
     name: "Summarize text",
     version: "0.1.0",
-    description: "Produce a concise summary of the provided text.",
+    description: "Concise bullet summary. Preserves facts; no invention.",
     author: "algogent",
     providers: ["chatgpt", "claude", "gemini", "meta_ai"],
-    pricing: {
-      amountMicro: 50_000,
-      asset: "USDC",
-      platformFeeBps: 1000,
-      developerPayTo: DEMO_DEV,
-    },
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
     bodyPath: "SKILL.md",
     tags: ["writing"],
-    inputs: [
-      {
-        key: "text",
-        label: "Text to summarize",
-        required: true,
-        placeholder: "Paste text…",
-      },
-    ],
+    inputs: [{ key: "text", label: "Text", required: true, placeholder: "Paste text…" }],
   },
   {
     id: "rewrite-clear",
     name: "Rewrite for clarity",
     version: "0.1.0",
-    description: "Rewrite the input in clearer, simpler language.",
+    description: "Rewrite in clearer, simpler language without changing meaning.",
     author: "algogent",
     providers: ["chatgpt", "claude", "gemini", "meta_ai"],
-    pricing: {
-      amountMicro: 50_000,
-      asset: "USDC",
-      platformFeeBps: 1000,
-      developerPayTo: DEMO_DEV,
-    },
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
     bodyPath: "SKILL.md",
     tags: ["writing"],
     inputs: [{ key: "text", label: "Text", required: true }],
   },
+  {
+    id: "meeting-notes",
+    name: "Meeting notes → actions",
+    version: "0.1.0",
+    description: "Extract decisions, action items, and open questions from raw notes.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["work"],
+    inputs: [{ key: "notes", label: "Raw notes", required: true }],
+  },
+  {
+    id: "pr-review",
+    name: "PR review",
+    version: "0.1.0",
+    description: "Structured code review: risks, tests, style, suggested fixes.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["code"],
+    inputs: [{ key: "diff", label: "Diff or code", required: true }],
+  },
+  {
+    id: "explain-code",
+    name: "Explain code",
+    version: "0.1.0",
+    description: "Plain-language explanation of what code does and why.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["code"],
+    inputs: [{ key: "code", label: "Code", required: true }],
+  },
+  {
+    id: "commit-message",
+    name: "Commit message",
+    version: "0.1.0",
+    description: "Conventional commit subject + body from a change description.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["code"],
+    inputs: [{ key: "change", label: "What changed", required: true }],
+  },
+  {
+    id: "email-reply",
+    name: "Email reply draft",
+    version: "0.1.0",
+    description: "Polite, concise reply draft in a chosen tone.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["work"],
+    inputs: [
+      { key: "email", label: "Original email", required: true },
+      { key: "goal", label: "What you want to say", required: true },
+      { key: "tone", label: "Tone", required: false, placeholder: "professional / friendly / firm" },
+    ],
+  },
+  {
+    id: "eli5",
+    name: "Explain like I'm 5",
+    version: "0.1.0",
+    description: "Simple explanation with analogy, plus a one-line accurate summary.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["learning"],
+    inputs: [{ key: "topic", label: "Topic or passage", required: true }],
+  },
+  {
+    id: "bug-bisect",
+    name: "Bug bisect plan",
+    version: "0.1.0",
+    description: "Turn a bug report into an ordered debugging checklist.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["code"],
+    inputs: [{ key: "bug", label: "Bug report", required: true }],
+  },
+  {
+    id: "sql-explain",
+    name: "Explain SQL",
+    version: "0.1.0",
+    description: "Explain a SQL query and flag performance pitfalls.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["data"],
+    inputs: [{ key: "sql", label: "SQL", required: true }],
+  },
+  {
+    id: "job-bullets",
+    name: "Resume bullets",
+    version: "0.1.0",
+    description: "Turn rough work notes into strong resume bullets.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["career"],
+    inputs: [{ key: "notes", label: "What you did", required: true }],
+  },
+  {
+    id: "regex-help",
+    name: "Regex helper",
+    version: "0.1.0",
+    description: "Write or explain a regex with test examples.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["code"],
+    inputs: [{ key: "task", label: "What you need", required: true }],
+  },
+  {
+    id: "threat-prompt",
+    name: "Threat model sketch",
+    version: "0.1.0",
+    description: "Lightweight STRIDE-style threats for a system description.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["security"],
+    inputs: [{ key: "system", label: "System description", required: true }],
+  },
+  {
+    id: "translate-formal",
+    name: "Translate (formal)",
+    version: "0.1.0",
+    description: "Formal translation; notes ambiguous phrases.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["language"],
+    inputs: [
+      { key: "text", label: "Text", required: true },
+      { key: "target", label: "Target language", required: true },
+    ],
+  },
+  {
+    id: "outline-post",
+    name: "Blog / thread outline",
+    version: "0.1.0",
+    description: "Structured outline for a post or X thread from a topic.",
+    author: "algogent",
+    providers: ["chatgpt", "claude", "gemini", "meta_ai"],
+    pricing: { amountMicro: 0, asset: "USDC", platformFeeBps: 1000 },
+    bodyPath: "SKILL.md",
+    tags: ["writing"],
+    inputs: [{ key: "topic", label: "Topic", required: true }],
+  },
 ] as const;
 
-export const SEED_SKILLS: SkillManifest[] = RAW_SKILLS.map((s) =>
-  parseSkillManifest(s),
-);
+export const SEED_SKILLS: SkillManifest[] = RAW.map((s) => parseSkillManifest(s));
 
 export const SKILL_BODIES: Record<string, string> = {
-  "summarize-text": `# Summarize text
-
-You are a precise summarization assistant.
-
-## Task
-
-Summarize the following text in 5 bullets or fewer. Preserve key facts; do not invent details.
-
-## Text
-
-{{text}}
-`,
-  "rewrite-clear": `# Rewrite for clarity
-
-Rewrite the text below so it is clearer and easier to read.
-Keep the original meaning. Use short sentences where possible.
-
-## Text
-
-{{text}}
-`,
+  "summarize-text": `# Summarize text\n\nYou are a precise summarization assistant.\n\n## Task\n\nSummarize the following text in **5 bullets or fewer**. Preserve key facts. Do not invent details.\n\n## Text\n\n{{text}}\n`,
+  "rewrite-clear": `# Rewrite for clarity\n\nRewrite the text so it is clearer and easier to read. Keep the original meaning. Prefer short sentences.\n\n## Text\n\n{{text}}\n`,
+  "meeting-notes": `# Meeting notes → actions\n\nFrom the notes below, produce:\n\n1. **Decisions** (bullets)\n2. **Action items** as \\\`- [ ] Owner — task — due if known\\\`\n3. **Open questions**\n\nIf owner is unknown, write \\\`Owner: TBD\\\`. Do not invent attendees or deadlines.\n\n## Notes\n\n{{notes}}\n`,
+  "pr-review": `# PR review\n\nReview the change below as a senior engineer.\n\n1. **Summary** (2 sentences)\n2. **Blockers**\n3. **Suggestions**\n4. **Tests**\n5. **Risk level**: low | medium | high\n\n## Diff / code\n\n{{diff}}\n`,
+  "explain-code": `# Explain code\n\n1. **What it does**\n2. **How it works**\n3. **Edge cases / pitfalls**\n4. **Glossary**\n\n## Code\n\n{{code}}\n`,
+  "commit-message": `# Commit message\n\nWrite one conventional commit (subject ≤ 72 chars). Types: feat, fix, docs, refactor, test, chore, perf, ci.\n\n## Change\n\n{{change}}\n`,
+  "email-reply": `# Email reply draft\n\nTone: {{tone}} (default professional). Goal: {{goal}}. ≤ 150 words. Output only the reply body.\n\n## Original email\n\n{{email}}\n`,
+  eli5: `# Explain like I'm 5\n\n1. Simple explanation\n2. One analogy\n3. **Accurate in one line:**\n\n## Topic\n\n{{topic}}\n`,
+  "bug-bisect": `# Bug bisect plan\n\n1. Restate failure\n2. Hypotheses (max 5)\n3. Checks (cheap first)\n4. Evidence to confirm/kill\n\n## Bug report\n\n{{bug}}\n`,
+  "sql-explain": `# Explain SQL\n\n1. What it returns\n2. Step-by-step\n3. Performance notes\n4. Safer variant if clearly better\n\n## SQL\n\n{{sql}}\n`,
+  "job-bullets": `# Resume bullets\n\n3–6 bullets. Strong verbs. Do not invent metrics.\n\n## Notes\n\n{{notes}}\n`,
+  "regex-help": `# Regex helper\n\n1. One regex + flavor\n2. Explain groups\n3. 3 match / 2 non-match examples\n\n## Task\n\n{{task}}\n`,
+  "threat-prompt": `# Threat model sketch\n\nAssets, trust boundaries, top threats (STRIDE), mitigations.\n\n## System\n\n{{system}}\n`,
+  "translate-formal": `# Translate (formal)\n\nTranslate into **{{target}}**. Formal register. Notes on ambiguity.\n\n## Text\n\n{{text}}\n`,
+  "outline-post": `# Blog / thread outline\n\nHook, sections, CTA, optional 8-tweet skeleton for: {{topic}}\n`,
 };
 
 export function getSkillById(id: string): SkillManifest | undefined {

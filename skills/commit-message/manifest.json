@@ -1,0 +1,13 @@
+{
+  "id": "commit-message",
+  "name": "Commit message",
+  "version": "0.1.0",
+  "description": "Conventional commit subject + body from a diff description.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["code"],
+  "inputs": [{ "key": "change", "label": "What changed", "required": true }],
+  "bodyPath": "SKILL.md"
+}

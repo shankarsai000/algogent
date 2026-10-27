@@ -1,0 +1,16 @@
+{
+  "id": "translate-formal",
+  "name": "Translate (formal)",
+  "version": "0.1.0",
+  "description": "Formal translation; keeps meaning; notes ambiguous phrases.",
+  "author": "algogent",
+  "license": "MIT",
+  "providers": ["chatgpt", "claude", "gemini", "meta_ai"],
+  "pricing": { "amountMicro": 0, "asset": "USDC", "platformFeeBps": 1000 },
+  "tags": ["writing", "language"],
+  "inputs": [
+    { "key": "text", "label": "Text", "required": true },
+    { "key": "target", "label": "Target language", "required": true, "placeholder": "e.g. Spanish, Japanese" }
+  ],
+  "bodyPath": "SKILL.md"
+}
