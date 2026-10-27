@@ -1,12 +1,13 @@
 # Algogent
 
 **Open, portable AI skills** that run on **ChatGPT, Claude, Gemini, and Meta AI** — using the accounts you already have.  
-Authors get paid **only when a run succeeds** (USDC micro-payments). Many skills are **free**.
+Many skills are **free**. Paid skills charge **only when a run succeeds**.
 
 > Custom GPTs are locked to one vendor. Skills should be open, portable, and fair to creators.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Spec](https://img.shields.io/badge/Open%20Skill%20Format-0.1-brightgreen)](spec/README.md)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 ---
 
@@ -16,8 +17,27 @@ Authors get paid **only when a run succeeds** (USDC micro-payments). Many skills
 |---------|----------|
 | Skills trapped in one chat product | **Open Skill Format** — one package, many runners |
 | Re-setup when you switch models | Same skill on ChatGPT *and* Claude |
-| Subscriptions for one-off tasks | **Pay per successful run** (or free) |
-| Creators can’t earn across platforms | Pricing in the skill manifest |
+| Subscriptions for one-off tasks | **Free** or **pay per successful run** |
+| Creators can’t earn across platforms | Optional pricing in the skill manifest |
+
+---
+
+## Demo
+
+```text
+Side panel → Summarize text (Free)
+    → inject into active ChatGPT / Claude tab
+    → success → no charge
+```
+
+**Add your GIF here before launch:**
+
+```markdown
+![Algogent demo](docs/assets/demo.gif)
+```
+
+Record: load extension → open ChatGPT → run a Free skill → show “Done · free skill”.  
+See [docs/LAUNCH_CHECKLIST.md](docs/LAUNCH_CHECKLIST.md).
 
 ---
 
@@ -33,35 +53,26 @@ pnpm --filter @algogent/extension dev
 
 1. Chrome → `chrome://extensions` → Developer mode → **Load unpacked** → WXT output folder  
 2. Open [ChatGPT](https://chatgpt.com) or [Claude](https://claude.ai)  
-3. Open the Algogent side panel → pick a **free** skill → run  
+3. Open the Algogent side panel → pick a **Free** skill → run  
 
-No wallet required for free skills or the first free runs.
+**No wallet required** for free skills.
 
 ---
 
-## Demo flow
+## Seed skills (free)
 
-```text
-Side panel → Summarize text (free)
-    → inject into active tab
-    → success → no charge (amountMicro: 0)
+Summarize · Rewrite · Meeting notes → actions · PR review · Explain code · Commit message · Email reply · ELI5 · Bug bisect · SQL explain · Resume bullets · Regex helper · Threat model sketch · Formal translate · Blog/thread outline  
 
-Paid skill → success → PaymentPlan → x402 USDC (Base) / simulate / balance
-Failed run → never charged
-```
-
-*(Replace this section with a 20s GIF before launch.)*
+All packages: [`skills/`](skills/) · Spec: [`spec/`](spec/README.md)
 
 ---
 
 ## Open Skill Format
 
-Skills live under [`skills/`](skills/) and follow [`spec/`](spec/README.md):
-
 ```text
-skills/summarize-text/
-  manifest.json
-  SKILL.md
+skills/my-skill/
+  manifest.json   # id, providers, pricing, inputs
+  SKILL.md        # prompt with {{placeholders}}
 ```
 
 Publish by PR. See [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -74,26 +85,8 @@ Publish by PR. See [CONTRIBUTING.md](CONTRIBUTING.md).
 success → shouldChargeOnResult → PaymentPlan → SettlementProvider → Receipt
 ```
 
-| Rail | Role |
-|------|------|
-| `simulate` | Default for dev / free path |
-| `x402_base` | Primary USDC micropayments |
-| `x402_solana` | Optional |
-| `stripe_balance` | Prepaid balance after fiat top-up |
-
+Free skills (`amountMicro: 0`) never open a payment rail.  
 Details: [docs/PAYMENTS.md](docs/PAYMENTS.md)
-
----
-
-## Repo map
-
-| Path | Purpose |
-|------|---------|
-| `spec/` | Open Skill Format |
-| `skills/` | Seed + community skills |
-| `packages/extension` | Chrome MV3 side panel |
-| `packages/shared` | Schemas & plan math |
-| `docs/` | Architecture, threat model, launch |
 
 ---
 
@@ -108,9 +101,13 @@ Details: [docs/PAYMENTS.md](docs/PAYMENTS.md)
 
 ---
 
+## Docs
+
+[Launch checklist](docs/LAUNCH_CHECKLIST.md) · [Show HN drafts](docs/SHOW_HN.md) · [Threat model](docs/THREAT_MODEL.md) · [Security](SECURITY.md)
+
 ## Status
 
-Early public build. APIs and DOM adapters may change. Skills with `amountMicro: 0` are the recommended default until settlement is production-hardened.
+Early public build. Provider DOMs change; adapters may need updates. Prefer free skills until settlement is production-hardened.
 
 ## License
 

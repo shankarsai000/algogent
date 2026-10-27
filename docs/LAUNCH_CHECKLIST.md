@@ -1,36 +1,70 @@
-# Launch checklist (stars + distribution)
+# Launch checklist (complete)
 
-## Before going public
+## A. Repo readiness
 
-- [ ] Repo is **public** on GitHub
-- [ ] README has problem → install → compare (done)
-- [ ] Record **20–30s demo GIF** (side panel → free skill → ChatGPT/Claude)
-- [ ] Embed GIF in README (replace placeholder line)
-- [ ] Topics on repo: `ai`, `chatgpt`, `claude`, `browser-extension`, `agents`, `opensource`
-- [ ] Description: `Open portable AI skills for ChatGPT, Claude, Gemini & Meta AI. Pay only on success.`
-- [ ] `pnpm test` green locally
-- [ ] Smoke: free skill on ChatGPT + Claude
+- [x] Open Skill Format (`spec/`)
+- [x] Free-tier path (no wallet for free skills)
+- [x] 15 seed skills
+- [x] README, CONTRIBUTING, LICENSE, SECURITY, CoC
+- [x] Issue + PR templates
+- [x] Show HN / social drafts (`docs/SHOW_HN.md`)
+- [ ] **Repo set to Public** (GitHub → Settings → General → Change visibility)
+- [ ] Topics: `ai`, `chatgpt`, `claude`, `browser-extension`, `agents`, `openai`, `anthropic`, `typescript`
+- [ ] About description: `Open portable AI skills for ChatGPT, Claude, Gemini & Meta AI. Pay only on success.`
+- [ ] Homepage URL (optional): repo or docs site
 
-## Launch day posts
+## B. Demo asset (blocking for launch posts)
 
-Use drafts in [SHOW_HN.md](./SHOW_HN.md).
+- [ ] Record 20–30s screen capture:
+  1. Open ChatGPT
+  2. Open Algogent side panel
+  3. Run **Summarize text** (Free)
+  4. Show status “Done · free skill”
+- [ ] Export GIF or MP4
+- [ ] Add to README under **Demo** (see placeholder)
 
-| Channel | When |
-|---------|------|
-| Show HN | Morning US time, weekday |
-| r/ChatGPT, r/claudeai, r/LocalLLaMA | Same day, not spammy |
-| X thread | Demo video + link |
-| Dev friends / Discord | Soft ping |
+### How to capture (macOS example)
 
-## After launch
+```bash
+# QuickTime or CleanShot → GIF
+# Or: chrome://extensions load unpacked, then record window
+```
 
-- [ ] Reply to **every** HN/Reddit comment in first 12 hours
-- [ ] Ship one fix from feedback same day
-- [ ] Label issues `good first issue`
-- [ ] Pin CONTRIBUTING + skill template
+## C. Local verify
 
-## Do not
+```bash
+git pull origin main
+pnpm install
+pnpm --filter @algogent/shared build
+pnpm --filter @algogent/shared test
+pnpm --filter @algogent/extension test
+pnpm --filter @algogent/extension dev
+```
 
-- Lead with crypto / Algorand in the title
-- Require wallet for first run
-- Promise “guaranteed stars”
+- [ ] Load unpacked in Chrome
+- [ ] Free skill works on ChatGPT
+- [ ] Free skill works on Claude
+- [ ] Failed run shows “no charge”
+
+## D. Launch day timeline
+
+| Time (ET) | Action |
+|-----------|--------|
+| T−1 day | Public repo, GIF in README, topics set |
+| 8:00–10:00 | Post **Show HN** |
+| +30 min | X thread + GIF |
+| +1 h | r/ChatGPT, r/claudeai (read rules first) |
+| All day | Reply to every comment |
+| EOD | Ship one fix from feedback; open 2–3 `good first issue`s |
+
+## E. After launch (48h)
+
+- [ ] Pin issue: “Welcome / how to add a skill”
+- [ ] Label backlog `good first issue`, `skill`, `adapter`
+- [ ] Thank first contributors publicly
+- [ ] Optional: Product Hunt (once demo is polished)
+
+## F. Messaging rules
+
+**Lead with:** portable skills, no API keys, free default, multi-UI.  
+**Do not lead with:** Algorand, crypto, wallets, “get rich with agents.”
