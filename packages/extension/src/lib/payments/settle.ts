@@ -7,6 +7,11 @@ import {
   type SkillResult,
 } from "@algogent/shared";
 import { loadPaymentConfig } from "./config";
+import {
+  hasFreePaidAllowance,
+  incrementFreePaidRunsUsed,
+  isFreeSkill,
+} from "./free-tier";
 import { saveReceipt } from "./receipt-store";
 import { getSettlementProvider, resolveRail } from "./registry";
 import { receiptFromPlan } from "./types";
@@ -22,7 +27,7 @@ export type SettleInput = {
 };
 
 /**
- * success → PaymentPlan → SettlementProvider → Receipt
+ * success → (free skip | PaymentPlan → SettlementProvider) → Receipt
  */
 export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt> {
   const { result } = input;
@@ -46,6 +51,27 @@ export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt
     return skipped;
   }
 
+  // Free skills: never open a wallet or settlement rail.
+  if (isFreeSkill(input.amountMicro)) {
+    const free: PaymentReceipt = {
+      runId: result.runId,
+      skillId: input.skillId,
+      network: "testnet",
+      mode: "simulate",
+      rail: "simulate",
+      txIds: [],
+      totalMicro: 0,
+      developerMicro: 0,
+      platformMicro: 0,
+      paidAt: new Date().toISOString(),
+      status: "settled",
+      errorCode: "free_skill",
+      paymentId: `free-${result.runId}`,
+    };
+    await saveReceipt(free);
+    return free;
+  }
+
   const config = await loadPaymentConfig();
 
   if (!input.developerPayTo) {
@@ -67,6 +93,13 @@ export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt
     return failed;
   }
 
+  // First N paid successes: force simulate so no wallet is required.
+  let preferredRail = input.preferredRail;
+  if (!preferredRail && (await hasFreePaidAllowance())) {
+    preferredRail = "simulate";
+    await incrementFreePaidRunsUsed();
+  }
+
   const intent: PaymentIntent = {
     runId: result.runId,
     skillId: input.skillId,
@@ -76,7 +109,7 @@ export async function settleAfterRun(input: SettleInput): Promise<PaymentReceipt
     platformPayTo: config.platformPayTo,
     platformFeeBps: input.platformFeeBps,
     network: config.network,
-    preferredRail: input.preferredRail,
+    preferredRail,
   };
 
   const plan = buildPaymentPlan(intent);

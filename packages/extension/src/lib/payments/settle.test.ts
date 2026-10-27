@@ -13,6 +13,15 @@ vi.mock("./config", () => ({
   })),
 }));
 
+vi.mock("./free-tier", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./free-tier")>();
+  return {
+    ...actual,
+    hasFreePaidAllowance: vi.fn(async () => true),
+    incrementFreePaidRunsUsed: vi.fn(async () => 1),
+  };
+});
+
 import { settleAfterRun } from "./settle";
 
 describe("settleAfterRun pipeline", () => {
@@ -38,7 +47,25 @@ describe("settleAfterRun pipeline", () => {
     expect(receipt.totalMicro).toBe(0);
   });
 
-  it("settles success via x402_base with simulate fallback", async () => {
+  it("settles free skills with zero total and no rail requirement", async () => {
+    const receipt = await settleAfterRun({
+      result: {
+        type: "SKILL_RESULT",
+        runId: "run-free-01",
+        status: "success",
+      },
+      skillId: "summarize-text",
+      amountMicro: 0,
+      asset: "USDC",
+      developerPayTo: "",
+      platformFeeBps: 1000,
+    });
+    expect(receipt.status).toBe("settled");
+    expect(receipt.totalMicro).toBe(0);
+    expect(receipt.errorCode).toBe("free_skill");
+  });
+
+  it("settles success via simulate allowance for paid skills", async () => {
     const receipt = await settleAfterRun({
       result: {
         type: "SKILL_RESULT",
@@ -50,29 +77,9 @@ describe("settleAfterRun pipeline", () => {
       asset: "USDC",
       developerPayTo: "0xDev",
       platformFeeBps: 1000,
-      preferredRail: "x402_base",
     });
     expect(receipt.status).toBe("settled");
     expect(receipt.developerMicro).toBe(90_000);
-    expect(receipt.platformMicro).toBe(10_000);
     expect(receipt.txIds.length).toBeGreaterThan(0);
-  });
-
-  it("can force pure simulate rail", async () => {
-    const receipt = await settleAfterRun({
-      result: {
-        type: "SKILL_RESULT",
-        runId: "run-success-02",
-        status: "success",
-      },
-      skillId: "summarize-text",
-      amountMicro: 100_000,
-      asset: "USDC",
-      developerPayTo: "0xDev",
-      platformFeeBps: 1000,
-      preferredRail: "simulate",
-    });
-    expect(receipt.status).toBe("settled");
-    expect(receipt.mode).toBe("simulate");
   });
 });

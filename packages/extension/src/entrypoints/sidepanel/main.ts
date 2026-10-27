@@ -3,6 +3,7 @@ import { renderSkillBody, type SkillManifest } from "@algogent/shared";
 import { SEED_SKILLS, SKILL_BODIES } from "../../lib/catalog";
 import { filterSkills } from "../../lib/filter-skills";
 import { createRunId } from "../../lib/ids";
+import { isFreeSkill } from "../../lib/payments/free-tier";
 import {
   connectWallet,
   getStoredWalletAddress,
@@ -16,10 +17,10 @@ if (!root) throw new Error("missing #root");
 const PROVIDER_FILTERS = ["all", "chatgpt", "claude", "gemini", "meta_ai"] as const;
 
 let statusText =
-  "Connect wallet (or simulate) · open a provider tab · run a skill.";
+  "Open ChatGPT or Claude · pick a Free skill · no wallet needed.";
 let query = "";
 let providerFilter: string = "all";
-let walletLabel = "Wallet: not connected";
+let walletLabel = "Wallet: optional";
 
 function setStatus(text: string): void {
   statusText = text;
@@ -35,11 +36,16 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
+function priceLabel(skill: SkillManifest): string {
+  if (isFreeSkill(skill.pricing.amountMicro)) return "Free";
+  return `${(skill.pricing.amountMicro / 1_000_000).toFixed(3)} ${skill.pricing.asset}`;
+}
+
 async function refreshWalletLabel(): Promise<void> {
   const addr = await getStoredWalletAddress();
   walletLabel = addr
     ? `Wallet: ${addr.slice(0, 6)}…${addr.slice(-4)}`
-    : "Wallet: not connected (simulate OK)";
+    : "Wallet: optional (free skills work without one)";
 }
 
 function renderList(): void {
@@ -52,9 +58,9 @@ function renderList(): void {
     root!.innerHTML = `
     <header class="header">
       <h1>Algogent</h1>
-      <p class="tagline">Skills · ChatGPT · Claude · Gemini · Meta AI</p>
+      <p class="tagline">Open skills · ChatGPT · Claude · Gemini · Meta AI</p>
       <p class="meta">${escapeHtml(walletLabel)}</p>
-      <button type="button" class="run" id="connect">Connect wallet</button>
+      <button type="button" class="run" id="connect">Connect wallet (optional)</button>
     </header>
     <div class="search">
       <input id="q" type="search" placeholder="Search skills…" value="${escapeHtml(query)}" />
@@ -101,12 +107,13 @@ function renderList(): void {
     }
 
     for (const skill of skills) {
+      const free = isFreeSkill(skill.pricing.amountMicro);
       const card = document.createElement("article");
       card.className = "card";
       card.innerHTML = `
-      <h2>${escapeHtml(skill.name)}</h2>
+      <h2>${escapeHtml(skill.name)}${free ? ' <span class="badge">Free</span>' : ""}</h2>
       <p>${escapeHtml(skill.description)}</p>
-      <p class="meta">${(skill.pricing.amountMicro / 1_000_000).toFixed(3)} ${skill.pricing.asset} · ${skill.providers.join(", ")}</p>
+      <p class="meta">${escapeHtml(priceLabel(skill))} · ${skill.providers.join(", ")}</p>
       <button type="button" class="run">Configure &amp; run</button>
     `;
       card.querySelector("button")?.addEventListener("click", () =>
@@ -118,6 +125,7 @@ function renderList(): void {
 }
 
 function renderDetail(skill: SkillManifest): void {
+  const free = isFreeSkill(skill.pricing.amountMicro);
   const fields = skill.inputs
     .map(
       (input) => `
@@ -133,10 +141,11 @@ function renderDetail(skill: SkillManifest): void {
       <button type="button" class="back" id="back">← Back</button>
       <h1>${escapeHtml(skill.name)}</h1>
       <p class="tagline">${escapeHtml(skill.description)}</p>
+      <p class="meta">${escapeHtml(priceLabel(skill))}${free ? " · no wallet needed" : ""}</p>
     </header>
     <form id="run-form" class="form">
       ${fields || "<p class=\"tagline\">No inputs required.</p>"}
-      <button type="submit" class="run primary">Run &amp; settle on success</button>
+      <button type="submit" class="run primary">${free ? "Run (free)" : "Run &amp; settle on success"}</button>
     </form>
     <p id="status" class="status" role="status">${escapeHtml(statusText)}</p>
   `;
@@ -196,6 +205,20 @@ async function handleRun(skill: SkillManifest): Promise<void> {
     return;
   }
 
+  if (isFreeSkill(skill.pricing.amountMicro)) {
+    const receipt = await settleAfterRun({
+      result,
+      skillId: skill.id,
+      amountMicro: 0,
+      asset: skill.pricing.asset,
+      developerPayTo: skill.pricing.developerPayTo ?? "",
+      platformFeeBps: skill.pricing.platformFeeBps,
+    });
+    setStatus(`Done · free skill · ${receipt.paymentId ?? "ok"}`);
+    void listReceipts();
+    return;
+  }
+
   setStatus("Settling payment…");
   const receipt = await settleAfterRun({
     result,
@@ -207,8 +230,9 @@ async function handleRun(skill: SkillManifest): Promise<void> {
   });
 
   if (receipt.status === "settled") {
+    const unit = skill.pricing.asset;
     setStatus(
-      `Paid ${receipt.totalMicro / 1_000_000} ALGO · ${receipt.mode} · ${receipt.txIds[0] ?? ""}`,
+      `Paid ${(receipt.totalMicro / 1_000_000).toFixed(3)} ${unit} · ${receipt.mode} · ${receipt.txIds[0] ?? ""}`,
     );
   } else {
     setStatus(`Payment ${receipt.status}: ${receipt.errorCode ?? ""}`);
