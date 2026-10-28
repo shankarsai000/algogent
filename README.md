@@ -30,14 +30,12 @@ Side panel → Summarize text (Free)
     → success → no charge
 ```
 
-**Add your GIF here before launch:**
-
-```markdown
 ![Algogent demo](docs/assets/demo.gif)
-```
 
-Record: load extension → open ChatGPT → run a Free skill → show “Done · free skill”.  
-See [docs/LAUNCH_CHECKLIST.md](docs/LAUNCH_CHECKLIST.md).
+Product walkthrough (HyperFrames): title → problem → free skills side panel → “Done · free skill · no charge” → Open Skill Format + repo CTA.
+
+- **GIF:** `docs/assets/demo.gif` (commit the file from the generated asset if missing)
+- **Full MP4:** see latest chat download / HyperFrames project `46c572c9-0100-4947-8155-635c3b41a345`
 
 ---
 
