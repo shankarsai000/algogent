@@ -1,11 +1,19 @@
 # Changelog
 
+## [0.6.3] — 2026-10-30
+
+### Docs
+- Expanded final README (architecture, skills table, payments pipeline, launch)
+- Animated `docs/assets/demo.svg` product demo for GitHub
+- `docs/assets/README.md` for GIF/MP4 local commit instructions
+
+## [0.6.2-oss-launch] — 2026-10-27
+
+- Issue/PR templates, SECURITY, CoC, full launch checklist & social drafts
+
 ## [0.6.1-oss-launch] — 2026-10-27
 
-### Added
-- Free-tier path: `amountMicro: 0` never charges; optional wallet; first paid runs can simulate
-- 15 free seed skills under `skills/` + extension catalog
-- CONTRIBUTING.md, LAUNCH_CHECKLIST.md, SHOW_HN.md, LICENSE
+- Free-tier path; 15 free seed skills; CONTRIBUTING
 
 ## [0.6.0-oss-launch] — 2026-10-26
 
@@ -13,4 +21,4 @@
 
 ## [0.5.0-settlement] — 2026-10-25
 
-- Pluggable settlement rails (x402 Base/Solana, simulate, stripe_balance)
+- Pluggable settlement: x402 Base/Solana, simulate, stripe_balance
