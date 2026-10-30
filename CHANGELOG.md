@@ -1,15 +1,20 @@
 # Changelog
 
+## [1.0.0] — 2026-10-30
+
+### Freeze
+- Audit freeze for OSS launch surface
+- README embeds `docs/assets/demo.gif`
+- `RELEASE.md` documents scope and known limits
+- Demo assets present: GIF, MP4, SVG
+
 ## [0.6.3] — 2026-10-30
 
-### Docs
-- Expanded final README (architecture, skills table, payments pipeline, launch)
-- Animated `docs/assets/demo.svg` product demo for GitHub
-- `docs/assets/README.md` for GIF/MP4 local commit instructions
+- Expanded README; `docs/assets/demo.svg`
 
 ## [0.6.2-oss-launch] — 2026-10-27
 
-- Issue/PR templates, SECURITY, CoC, full launch checklist & social drafts
+- Issue/PR templates, SECURITY, CoC, launch checklist & social drafts
 
 ## [0.6.1-oss-launch] — 2026-10-27
 

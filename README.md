@@ -2,11 +2,12 @@
 
 **Open, portable AI skills** that run on **ChatGPT, Claude, Gemini, and Meta AI** — using the accounts you already have.
 
-Many skills are **free**. Paid skills charge **only when a run succeeds** (USDC micropayments via pluggable settlement). Failed runs are never charged.
+Many skills are **free**. Paid skills charge **only when a run succeeds**. Failed runs are never charged.
 
 > Custom GPTs lock skills inside one vendor. Skills should be open, portable, and fair to creators.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](RELEASE.md)
 [![Spec](https://img.shields.io/badge/Open%20Skill%20Format-0.1-brightgreen)](spec/README.md)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -14,20 +15,18 @@ Many skills are **free**. Paid skills charge **only when a run succeeds** (USDC 
 
 ## Demo
 
-![Algogent product demo](docs/assets/demo.svg)
+![Algogent product demo](docs/assets/demo.gif)
 
-**Story (27s):** title → locked silos → free skills side panel → “Done · free skill · no charge” → Open Skill Format + repo CTA.
+**Story:** title → locked silos → free skills side panel → “Done · free skill · no charge” → Open Skill Format + repo CTA.
 
-| Asset | Path | Notes |
-|-------|------|--------|
-| Animated SVG | [`docs/assets/demo.svg`](docs/assets/demo.svg) | Renders on GitHub |
-| GIF | `docs/assets/demo.gif` | Add via local commit ([instructions](docs/assets/README.md)) |
-| MP4 + audio | `docs/assets/algogent-demo.mp4` | Same; GIF has **no** audio by format |
+- GIF: [`docs/assets/demo.gif`](docs/assets/demo.gif) (silent — GIF format)
+- MP4 + audio: [`docs/assets/algogent-demo.mp4`](docs/assets/algogent-demo.mp4)
+- SVG fallback: [`docs/assets/demo.svg`](docs/assets/demo.svg)
 
 ```text
-Side panel → pick Free skill → inject into active ChatGPT/Claude tab
+Side panel → Free skill → inject into active ChatGPT/Claude tab
     → success → no charge (amountMicro: 0)
-Paid skill → success → PaymentPlan → settlement rail → Receipt
+Paid skill → success → PaymentPlan → settlement → Receipt
 Failed run → never charged
 ```
 
@@ -47,13 +46,7 @@ Failed run → never charged
 
 ## Quick start
 
-### Requirements
-
-- Node 20+
-- [pnpm](https://pnpm.io) 9+
-- Chrome (MV3 extension)
-
-### Install & run
+**Requirements:** Node 20+, pnpm 9+, Chrome.
 
 ```bash
 git clone https://github.com/shankarsai000/algogent.git
@@ -63,14 +56,11 @@ pnpm --filter @algogent/shared build
 pnpm --filter @algogent/extension dev
 ```
 
-1. Open `chrome://extensions` → enable **Developer mode**
-2. **Load unpacked** → select the WXT output folder (printed by `dev`, often `packages/extension/.output/chrome-mv3`)
-3. Open [ChatGPT](https://chatgpt.com) or [Claude](https://claude.ai) while logged in
-4. Open the **Algogent** side panel → choose a **Free** skill → **Run**
+1. `chrome://extensions` → **Developer mode** → **Load unpacked** → WXT output folder  
+2. Open [ChatGPT](https://chatgpt.com) or [Claude](https://claude.ai) (logged in)  
+3. Algogent side panel → **Free** skill → **Run**  
 
-**No wallet required** for free skills (`amountMicro: 0`).
-
-### Tests
+No wallet required for free skills.
 
 ```bash
 pnpm --filter @algogent/shared test
@@ -94,76 +84,51 @@ pnpm --filter @algogent/extension test
 | Bug bisect plan | Hypotheses + ordered checks |
 | Explain SQL | Meaning + performance notes |
 | Resume bullets | Impact-focused bullets |
-| Regex helper | Pattern + match/non-match examples |
+| Regex helper | Pattern + examples |
 | Threat model sketch | Assets, boundaries, mitigations |
 | Translate (formal) | Formal register + ambiguity notes |
 | Blog / thread outline | Structure + optional thread skeleton |
 
-Packages live under [`skills/`](skills/). Spec: [`spec/`](spec/README.md).
+See [`skills/`](skills/) · Spec: [`spec/`](spec/README.md).
 
 ---
 
-## Open Skill Format (OSF)
+## Open Skill Format
 
 ```text
 skills/my-skill/
   manifest.json   # id, providers, pricing, inputs
-  SKILL.md        # prompt body with {{placeholders}}
+  SKILL.md        # prompt with {{placeholders}}
 ```
 
-Example input binding: `{{text}}` in `SKILL.md` ↔ `inputs[].key = "text"`.
-
-Pricing: `amountMicro: 0` = free. Positive values use USDC micro-units (e.g. `50000` = $0.05).
-
-Contribute with [`skills/_template/`](skills/_template/) and [CONTRIBUTING.md](CONTRIBUTING.md).
+`amountMicro: 0` = free. Contribute via [`skills/_template/`](skills/_template/) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## Architecture
 
 ```text
-┌─────────────────────────────────────────────────────────┐
-│  Side panel (MV3)  →  catalog / filters / run form        │
-└───────────────────────────┬─────────────────────────────┘
-                            │ RUN_SKILL
-┌───────────────────────────▼─────────────────────────────┐
-│  Background + content adapters                           │
-│  ChatGPT · Claude · Gemini · Meta AI  (session DOM)      │
-└───────────────────────────┬─────────────────────────────┘
-                            │ SkillResult success|failed
-┌───────────────────────────▼─────────────────────────────┐
-│  shouldChargeOnResult → PaymentPlan → SettlementProvider │
-│  rails: simulate · x402_base · x402_solana · stripe_bal. │
-│  Receipt → chrome.storage.local                          │
-└─────────────────────────────────────────────────────────┘
+Side panel → RUN_SKILL → content adapters (ChatGPT/Claude/Gemini/Meta AI)
+         → SkillResult
+         → shouldChargeOnResult → PaymentPlan → SettlementProvider → Receipt
 ```
 
 | Package | Role |
 |---------|------|
-| `packages/shared` | Zod schemas, `buildPaymentPlan`, skill body render |
-| `packages/extension` | WXT MV3 app, adapters, payments, UI |
-| `spec/` | Open Skill Format docs |
+| `packages/shared` | Schemas, plan math, skill body render |
+| `packages/extension` | MV3 app, adapters, payments, UI |
+| `spec/` | Open Skill Format |
 | `skills/` | Seed + community skills |
-| `docs/` | Payments, threat model, launch |
 
 ---
 
 ## Payments (optional)
 
 ```text
-success → shouldChargeOnResult === true
-       → PaymentPlan (amount, developerShare, platformShare)
-       → Settlement adapter (pluggable)
-            ├─ x402 USDC (Base)     ← primary
-            ├─ x402 USDC (Solana)   ← optional
-            ├─ Simulate             ← dev / free-tier allowance
-            └─ Stripe balance burn  ← optional fiat top-up
-       → Receipt in local storage
+success → PaymentPlan → simulate | x402_base | x402_solana | stripe_balance → Receipt
 ```
 
-- Free skills never open a rail.
-- First few *paid* successes can force **simulate** so onboarding needs no wallet.
-- Details: [docs/PAYMENTS.md](docs/PAYMENTS.md) · ADR: `docs/ADR/`
+Free skills never open a rail. See [docs/PAYMENTS.md](docs/PAYMENTS.md).
 
 ---
 
@@ -172,50 +137,19 @@ success → shouldChargeOnResult === true
 | | Custom GPT / Gem | MCP only | **Algogent** |
 |--|------------------|----------|--------------|
 | Portable across chat UIs | No | N/A | **Yes** |
-| Uses logged-in session | Yes | No | **Yes** |
+| Logged-in session | Yes | No | **Yes** |
 | Success-gated micro-pay | No | DIY | **Yes** |
 | Open skill packages | No | Partial | **Yes** |
 
 ---
 
-## Repo map
+## Docs
 
-```text
-algogent/
-  spec/                 Open Skill Format
-  skills/               Seed skills + _template
-  packages/
-    shared/             Schemas & plan math
-    extension/          Chrome MV3 side panel
-  docs/
-    assets/             demo.svg (+ gif/mp4 when committed)
-    LAUNCH_CHECKLIST.md
-    SHOW_HN.md
-    PAYMENTS.md
-  CONTRIBUTING.md
-  SECURITY.md
-  LICENSE
-```
-
----
-
-## Launch & community
-
-- [Launch checklist](docs/LAUNCH_CHECKLIST.md) — public repo, topics, Show HN timing
-- [Show HN / social drafts](docs/SHOW_HN.md)
-- [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Code of conduct](CODE_OF_CONDUCT.md)
-
-**Suggested GitHub About**
-
-> Open portable AI skills for ChatGPT, Claude, Gemini & Meta AI. Pay only on success.
-
-**Topics:** `ai` `chatgpt` `claude` `browser-extension` `agents` `typescript` `openai` `anthropic`
-
----
+[RELEASE.md](RELEASE.md) · [Launch checklist](docs/LAUNCH_CHECKLIST.md) · [Show HN](docs/SHOW_HN.md) · [Architecture](docs/ARCHITECTURE.md) · [Threat model](docs/THREAT_MODEL.md) · [Privacy](docs/PRIVACY_POLICY.md) · [Security](SECURITY.md)
 
 ## Status
 
-Early public build (`0.6.x`). Provider DOMs change; adapters may need updates after UI redesigns. Prefer free skills until live x402 facilitators are production-hardened.
+**1.0.0 freeze.** Provider DOMs may change; adapters can need fixes after UI redesigns. Prefer free skills until live x402 is production-hardened.
 
 ## License
 

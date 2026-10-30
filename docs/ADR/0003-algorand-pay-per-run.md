@@ -1,24 +1,15 @@
-# ADR 0003: Algorand pay-per-completed-run
+# ADR 0003 — Original pay-per-run (Algorand)
 
-## Status
-
-Accepted (Phase 3)
+**Status:** Superseded by [0004-pluggable-settlement-x402.md](./0004-pluggable-settlement-x402.md)
 
 ## Context
 
-Algogent must charge only when a skill run succeeds, and split funds between skill developer and platform in one settlement.
+Early design used Algorand-native micro-payments for success-gated skill runs.
 
-## Decision
+## Decision (historical)
 
-1. **Gate**: `shouldChargeOnResult` — only `success` triggers settlement.
-2. **Plan**: `buildPaymentPlan` splits `amountMicro` by `platformFeeBps`.
-3. **Network**: default **Testnet**; `simulate: true` until wallet + algosdk broadcast is configured.
-4. **Atomic split (target)**: two payment legs in one atomic group (developer + platform).
-5. **Receipts**: stored locally in `chrome.storage.local` (no custodial server in v1).
-6. **Wallet**: ARC-0027 `window.algorand` when available; otherwise simulate mode.
+Charge only on successful runs; split developer / platform fees on-chain.
 
-## Consequences
+## Supersession
 
-- CI and local dev work without a funded wallet.
-- On-chain path is explicit and fails closed until configured.
-- x402 HTTP micropayments can wrap the same plan object later without changing the gate.
+Settlement is now **pluggable**. Primary path is **x402 USDC (Base)** with `simulate` for dev/free onboarding. Algorand may remain as an optional future rail but is not required for 1.0.0.
